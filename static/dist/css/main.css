@@ -1,0 +1,108 @@
+@font-face {
+    font-family: "Calibre Bold";
+    src: url("./fonts/calibre-web-bold.woff") format('woff');
+}
+@font-face {
+    font-family: "Calibre Regular";
+    src: url("./fonts/calibre-regular-webfont.ttf") format('ttf');
+}
+body {
+    padding: 0;
+    margin: 0;
+}
+html, body, #map {
+    height: 100%;
+    width: 100%;
+}
+.dropdown-hdr{
+    font-family:"Calibre Bold";
+}
+.dropdown-btn {
+    font-size: 18px !important;
+    font-family: "Calibre Regular";
+    background-color: #fff;
+    border: 1px solid #C7E3FA !important;
+    height: 60px;
+    text-align: left !important;
+    margin-bottom: 30px;
+}
+.dropdown-menu {
+    max-height: 200px;
+    overflow-y: auto;
+}
+.pill-btn {
+    font-size: 18px !important;
+    font-family: "Calibre Regular";
+    background-color: #fff;
+    border: 1px solid #C7E3FA !important;
+    height: 44px;
+    border-radius: 10x;
+    float: right;
+}
+.legend {
+    line-height: 18px;
+    color: #555;
+}
+.legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+.info-modal-icon{
+    font-size: 10px;
+    color: #C7E3FA !important;
+    cursor: pointer;
+}
+.modal-title {
+    font-size: 24px !important;
+    font-family: "Calibre Bold" !important; 
+}
+.modal-subtitle {
+    font-size: 18px !important;
+    font-family: "Calibre" !important; 
+}
+.parameter-description {
+    font-size: 14px !important;
+    font-family: "Calibre Regular" !important;
+}
+#chart-loading-spinner {
+    font-weight:bold;
+    font-size: x-large;
+}
+#map {
+    background: #fff;
+    cursor: crosshair;
+}
+.leaflet-container {
+    cursor: crosshair;
+}
+.right-caret {
+    position: absolute;
+    left: 90%;
+    top: 45%;
+}
+.onhover-pixel-info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    float: left;
+}
+.onhover-pixel-info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
+#timeseries-chart-div {
+    font-size: 14px !important;
+    font-family: "Calibre Regular" !important;
+}
+.modal-backdrop {
+    z-index: -1;
+  }
+#timeseriesModal {
+    z-index: 10040;
+}
