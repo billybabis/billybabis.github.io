@@ -8,7 +8,7 @@ import Chart from 'chart.js/auto';
 
 
 plotty.addColorScale("rff_palette", getPalette(), [0, 0.25, 0.5, 0.75, 1]);
-const COUNTY_GEOJSON_FNAME ="./datacommons/data/scripts/rff/raw_data/us_vectors/counties/tl_2020_us_county_simplified.geojson";
+const COUNTY_GEOJSON_FNAME ="./data/tl_2020_us_county_simplified.geojson";
 var layers;
 
 

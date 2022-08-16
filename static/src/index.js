@@ -10,7 +10,7 @@ import "leaflet-sidebar-v2";
  * VISUALIZE MAP
  */
 var map = L.map('map', {center: [38, -88], zoom: 4, minZoom: 4, maxZoom: 14, zoomDelta: 0.5, zoomControl: false});
-var states_geojson = "./datacommons/data/scripts/rff/raw_data/us_vectors/gadm_continental_us_states_simp.geojson";
+var states_geojson = "./data/gadm_continental_us_states_simp.geojson";
 var style = {color: "white", fillColor: "white", fillOpacity: 0, opacity: 0.2, weight: 3};
 var stateBordersGeoJSON = new L.GeoJSON.AJAX(states_geojson, {style: style});
 stateBordersGeoJSON.addTo(map);
