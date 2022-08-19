@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<!-- TO DO: Download jquery and bootstrap files  -->
+<html>
+    <head>
+        <title>US Weather Volatility (RFF)</title>
+        <meta charset="utf-8" />
+        <link rel="shortcut icon" href="#">
+        <link rel="stylesheet" href="./static/dist/css/main.css"/>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+        <link rel="stylesheet" href="./static/node_modules/leaflet-sidebar-v2/css/leaflet-sidebar.css"/>
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div id="sidebar" class="leaflet-sidebar" style="max-width: 25%; border: none;">
+            <div class="leaflet-sidebar-content" style="overflow:hidden;">
+              <div class="leaflet-sidebar-pane active" id="control" style="padding-right:130px;">                
+                <h4 class="dropdown-hdr">Climate Variable 
+                  <span class="info-modal-icon" data-info-modal="cvar-info" data-modal-header="Description of Climate Variables">
+                    <span class="fa-stack fa-sm">
+                      <i class="fa fa-circle-thin fa-stack-2x"></i>
+                      <i class="fa fa-stack-1x">i</i>
+                    </span>
+                    <span id="cvar-info" class="info-modal-content hidden">
+                      <p class="parameter-description"> Precipitation (mm), Minimum Temperature (&#8451;), Maximum Temperature (&#8451;) statistics are based on daily PRISM data from 1981 to present.</p>
+                    </span>
+                  </span>
+                </h4>
+                <div class="dropdown">
+                  <button class="btn btn-basic btn-block dropdown-btn dropdown-toggle" type="button" id="climate-var" data-toggle="dropdown" value="ppt">Precipitation
+                    <span class="caret right-caret pull-right"></span></button> 
+                  <ul class="dropdown-menu" role="menu" id="climate-var-dropdown" aria-labelledby="climate-var">
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="ppt">Precipitation</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="tmin">Min. Temperature</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="tmax">Max. Temperature</a></li>
+                  </ul>
+                </div>
+
+                <h4 class="dropdown-hdr">Metric 
+                  <span class="info-modal-icon" data-info-modal="metric-info" data-modal-header="Description of Statistics">
+                    <span class="fa-stack fa-sm">
+                      <i class="fa fa-circle-thin fa-stack-2x"></i>
+                      <i class="fa fa-stack-1x">i</i>
+                    </span>
+                    <span id="metric-info" class="info-modal-content hidden">
+                      <p class="parameter-description"> <strong>Standard Deviation (SD)</strong>: measures the amount of variation in a set of values, or the magnitude of variability. A low SD indicates that values tend to be close to the mean (low variability) while a high SD indicates that values are spread over a wider range (high variability).</p>
+                      <p class="parameter-description"> <strong>Skewness</strong>: measures the asymmetry of a distribution. It can be interpreted as the propensity to experience positive or negative shocks.</p>
+                      <p class="parameter-description"> <strong>Kurtosis</strong>: measures the frequency of extreme deviations. It gives an indication of how likely a variable is to take very high or low value.</p>
+                      <p class="parameter-description"> <strong>Heavy Precipitation Index</strong>: measures the portion of total precipitation that occurred on days with "extreme" precipitation (where the definition of “extreme” is the top 1st percentile). It describes what percentage of precipitation is arriving in short, intense bursts. The key benefit of this indicator is that it closely relates to flooding.</p> 
+                      <p class="parameter-description"> <strong>Consecutive dry days (CDD)</strong>: measures the maximum number of consecutive days with precipitation below a given threshold (e.g. 1mm). It has been shown to be a predictor of agricultural yields and ecosystem health, and is easily interpretable by non-specialists. </p>        
+                    </span>
+                  </span>
+                </h4>
+                <div class="dropdown">
+                  <button class="btn btn-basic btn-block dropdown-btn dropdown-toggle" type="button" id="metric" data-toggle="dropdown" value="std-dev">Standard Deviation
+                    <span class="caret right-caret pull-right"></span></button>
+                  <ul class="dropdown-menu update-onselect-dropdown" role="menu" id="metric-dropdown" aria-labelledby="metric">
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="std-dev">Standard Deviation</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="skewness">Skewness</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="kurtosis">Kurtosis</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="hpi">Heavy Precipitation Index</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="cdd">Consecutive Dry Days</a></li>
+                  </ul>
+                </div>
+
+                <h4 class="dropdown-hdr">Spatial Scale 
+                  <span class="info-modal-icon" data-info-modal="spatial-info" data-modal-header="Description of Spatial Scales">
+                    <span class="fa-stack fa-sm">
+                      <i class="fa fa-circle-thin fa-stack-2x"></i>
+                      <i class="fa fa-stack-1x">i</i>
+                    </span>
+                    <span id="spatial-info" class="info-modal-content hidden">
+                      <p class="parameter-description">4km is the most granular spatial scale available for PRISM data. This data can be aggregated at the county-level.</p>
+                    </span>
+                  </span> 
+                </h4>
+                <div class="dropdown">
+                  <button class="btn btn-basic btn-block dropdown-btn dropdown-toggle" type="button" id="spatial" data-toggle="dropdown" value="county">County
+                    <span class="caret right-caret pull-right"></span></button>
+                  <ul class="dropdown-menu update-onselect-dropdown" role="menu" id="spatial-dropdown" aria-labelledby="spatial">
+                    <!--li role="presentation"><a role="menuitem" tabindex="-1" value="4km">4km</a></li-->
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="county">County</a></li>
+                  </ul>
+                </div>
+
+                <h4 class="dropdown-hdr">Temporal Aggregation Scale 
+                  <span class="info-modal-icon" data-info-modal="temporal-info" data-modal-header="Description of Temporal Scales">
+                    <span class="fa-stack fa-sm">
+                      <i class="fa fa-circle-thin fa-stack-2x"></i>
+                      <i class="fa fa-stack-1x">i</i>
+                    </span>
+                    <span id="temporal-info" class="info-modal-content hidden">
+                      <p class="parameter-description">Statistics can be computed over monthly, yearly, or 5-yearly intervals.</p>
+                    </span>
+                  </span>
+                </h4>
+                <div class="dropdown">
+                  <button class="btn btn-basic btn-block dropdown-btn dropdown-toggle" type="button" id="temporal" data-toggle="dropdown" value="yearly">Yearly
+                    <span class="caret right-caret pull-right"></span></button>
+                  <ul class="dropdown-menu" role="menu" id="temporal-dropdown" aria-labelledby="temporal">
+                    <!--li role="presentation"><a role="menuitem" tabindex="-1" value="monthly">Monthly</a></li-->
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="yearly">Yearly</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="5year">5-Year</a></li>
+                  </ul>
+                </div>
+
+                <h4 class="dropdown-hdr">Time Period
+                  <span class="info-modal-icon" data-info-modal="metric-info" data-modal-header="Description of Time Periods">
+                    <span class="fa-stack fa-sm">
+                      <i class="fa fa-circle-thin fa-stack-2x"></i>
+                      <i class="fa fa-stack-1x">i</i>
+                    </span>
+                    <span id="metric-info" class="info-modal-content hidden">
+                      <p class="parameter-description">Select a specific monthly, annual, or 5-year time interval to compute the selected statistic.</p>
+                    </span>
+                  </span>
+                </h4>
+                <div class="dropdown">
+                  <button class="btn btn-basic btn-block dropdown-btn dropdown-toggle" type="button" id="daterange" data-toggle="dropdown">Select
+                    <span class="caret right-caret pull-right"></span></button>
+                  <ul class="dropdown-menu update-onselect-dropdown" role="menu" id="date-dropdown" aria-labelledby="daterange">
+                  </ul>
+                </div>
+
+                <br>
+                <button class="btn btn-basic pill-btn" id="download-btn" type="button" data-toggle="modal" data-target="#downloadModal">
+                  Download Data
+                </button>
+
+                <!-- Modal for downloading data--> 
+                <div class="modal fade" id="downloadModal" tabindex="-1" role="dialog" aria-labelledby="downloadModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h5 class="modal-title" id="downloadModalLabel">Download Data</h5>
+                      </div>
+                      <div class="modal-body">
+                        <p id="download-modal-description"></p>
+                        <div id="file-fmt-dropdown">
+                          <h5 class="dropdown-hdr">Select File Format</h5>
+                          <div class="dropdown">
+                            <button class="btn btn-basic dropdown-toggle" type="button" id="download-fmt" data-toggle="dropdown">Select
+                              <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" id="download-fmt-dropdown" aria-labelledby="download-fmt">
+                              <li role="presentation"><a role="menuitem" tabindex="-1" href="#" value=".tif">GeoTiff (.tif)</a></li>
+                              <li role="presentation"><a role="menuitem" tabindex="-1" href="#" value=".bil">EHdr (.bil)</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <a id="confirm-download-btn">
+                          <button type="button" class="btn btn-primary">Download</button>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Modal with sidebar parameter info -->
+                <div class="modal fade" id="parameter-info-modal" tabindex="-1" role="dialog" aria-labelledby="parameter-info-modal-label" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h5 class="modal-title" id="parameter-info-modal-title"></h5>
+                      </div>
+                      <div id="parameter-info-modal-body" class="modal-body"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="timeseriesModal" tabindex="-1" role="dialog" aria-labelledby="clickModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content modal-lg">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  <h4 class="modal-title" id="timeseries-modal-title"></h4>
+                  <h4 class="modal-subtitle" id="timeseries-modal-subtitle"></h4>
+                </div>
+                <div class="modal-body">
+                  <div id="chart-container">
+                    <div class="text-center" id="chart-loading-spinner">
+                      <i class="fa fa-spinner fa-spin"></i>
+                    </div>
+                    <div class="timeseries-chart-div" style="position: relative;">
+                      <canvas id="timeseries-chart"></canvas>
+                    </div>
+                  </div>
+                  <br><br>
+                  <div id="gcm-dropdown">
+                    <h5 class="dropdown-hdr">Select Global Circulation Model for Projections</h5>
+                    <div class="container">
+                      <div class="row">
+                        <div class="col-md-2">
+                          <div class="dropdown">
+                            <button class="btn btn-basic dropdown-toggle" type="button" id="select-gcm" data-toggle="dropdown" value="NorESM1-M">NorESM1-M
+                              <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" id="select-gcm-dropdown" aria-labelledby="select-gcm">
+                              <li role="presentation"><a role="menuitem" tabindex="-1" href="#" value="NorESM1-M">NorESM1-M</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <div class="dropdown">
+                            <button class="btn btn-basic dropdown-toggle" type="button" id="select-gcm-rcp" data-toggle="dropdown" value="RCP4.5">RCP4.5
+                              <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" id="select-rcp-dropdown" aria-labelledby="select-gcm-rcp">
+                              <li role="presentation"><a role="menuitem" tabindex="-1" href="#" value="RCP4.5">RCP4.5</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <button class="btn btn-primary" id="view-timeseries-btn" type="button">View Timeseries</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="leaflet-top leaflet-left">
+            <div class="onhover-pixel-info leaflet-control">
+              <h4 id="onhover-info-header">Pixel-value</h4>
+              <span id="onhover-info-description">Hover Over the map</span>
+            </div>
+          </div>
+      
+          <div id="map"></div>
+        <script src="./static/node_modules/leaflet/dist/leaflet.js"></script>
+        <script src="./static/node_modules/geotiff/dist-browser/geotiff.js"></script>
+        <script src="./static/node_modules/plotty/dist/plotty.js"></script>
+        <script src="./static/dist/main.js"></script>
+    </body>
+</html>

@@ -47,7 +47,11 @@ class RendererCounty {
             contentType: "application/json",
             success:function(response){
                 function styleFn(countyFeat){
-                    var style = {fillOpacity: 0.7, opacity: 0.1, weight: 3, color:"black"};
+                    var borderWeight = 1;
+                    if (map.getZoom() > 5) {
+                        borderWeight = 3;
+                    }
+                    var style = {fillOpacity: 0.7, opacity: 0.1, weight: borderWeight, color:"black"};
                     var valPerCounty = response.observationsByVariable[0].observationsByEntity;
                     for (const countyVal of valPerCounty) {
                         var geoid = countyVal.entity.substring(6);
@@ -69,11 +73,21 @@ class RendererCounty {
                 function eachFn(countyFeat, layer) {
                     layer.on("mouseover", function(e){
                         updateInfoBox(e);
-                    })
+                    });
                     layer.on("click", function(e){
                         var obsPeriod = temporalFldr_to_gdcLabel(temporalFldr);
                         initTimeseries(e, gdc_varname, obsPeriod);
-                    })
+                    });
+                    map.on('zoomend', function () {
+                        var zlvl = map.getZoom()
+                        var borderWeight = 2.5;
+                        if (zlvl <= 5) {
+                            borderWeight = 1.5;
+                        } else if (zlvl >= 8) {
+                            borderWeight = 3.5;
+                        }
+                        layer.setStyle({weight: borderWeight});
+                    });
                 }
                 var countiesGeoJSON = new L.GeoJSON.AJAX(COUNTY_GEOJSON_FNAME, 
                     {style: styleFn, onEachFeature: eachFn});
@@ -124,10 +138,6 @@ export function fetchLayers(map, cvar, metricInfo, spatialScale, temporalScale, 
  */
  var currChart, county_geoid; 
  function displayTimeseries(geoid, cvarLabel, metricLabel, gdc_varname, obsPeriod){
-     var cvarVal = $("button#climate-var").val();
-     var metricVal = $("button#metric").val().replace("-", "_");
-     var time_agg = temporal_interval_folder($("button#temporal").val());
-
      var gdc_url = "https://api.datacommons.org/stat/series?place=geoId%2F"+geoid+
         "&stat_var="+gdc_varname+"&observation_period="+obsPeriod;
      var historicalYears = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021];
