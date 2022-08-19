@@ -30,6 +30,15 @@ function GDC_StatName(cvar, metricInfo){
     }
 }
 
+function format_daterange(temporalFldr, daterange){
+    console.log(temporalFldr);
+    if ((temporalFldr == "agg_year") || (temporalFldr == "agg_5year")) {
+        return daterange.substring(0,4);
+    } else {
+        return daterange.substring(0,4) + "-" + daterange.substring(4,6);
+    }
+}
+
 /**
  * VISUALIZE COUNTY-LEVEL DATA
  */
@@ -37,8 +46,9 @@ function GDC_StatName(cvar, metricInfo){
 class RendererCounty {
     fetchLayers(map, cvar, metricInfo, temporalFldr, daterange) {
         var gdc_varname = GDC_StatName(cvar, metricInfo);
+        var daterange_fmtd = format_daterange(temporalFldr, daterange);
         var dcUrl = "https://api.datacommons.org/v1/bulk/observations/point/linked?entity_type=County&linked_entity=country/USA&linked_property=containedInPlace"
-        dcUrl = dcUrl + "&variables="+gdc_varname+"&date="+daterange;
+        dcUrl = dcUrl + "&variables="+gdc_varname+"&date="+daterange_fmtd;
         var palette = getPalette(true)
         $.ajax({
             url:(dcUrl),
@@ -83,8 +93,10 @@ class RendererCounty {
                         var borderWeight = 2.5;
                         if (zlvl <= 5) {
                             borderWeight = 1.5;
-                        } else if (zlvl >= 8) {
+                        } else if (zlvl >= 8 && zlvl <= 10) {
                             borderWeight = 3.5;
+                        } else if (zlvl > 10){
+                            borderWeight = 4.5;
                         }
                         layer.setStyle({weight: borderWeight});
                     });
