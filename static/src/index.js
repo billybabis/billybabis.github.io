@@ -137,10 +137,8 @@ $(function(){
     $("#download-fmt-dropdown li a").click(function(){
         var downloadBtn = $("a#confirm-download-btn");
         var inputFname = downloadBtn.attr("href");
-        console.log(inputFname);
         var fileFmt = $("button#download-fmt").val();
         inputFname = inputFname.substring(0, inputFname.indexOf('.tif')) + fileFmt;
-        console.log(inputFname);
         downloadBtn.attr("href", inputFname);
         //update download attr
         var daterange = $("button#daterange").val();
