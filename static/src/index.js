@@ -1,15 +1,13 @@
 import { fetchLayers }  from './fetchData.js';
-import { _remove, getPalette, temporal_interval_folder } from './helper.mjs'
-import { metricsInfo, getMetrics, gcm_cvar } from './metrics.mjs';
+import { _remove, getPalette, temporal_interval_folder} from './helper.js';
+import { metricsInfo, getMetrics, gcm_cvar } from './metrics.js';
 import { getDateIntervals } from './timescales.js';
 import "leaflet-sidebar-v2";
-
-
 
 /**
  * VISUALIZE MAP
  */
-var map = L.map('map', {center: [38, -88], zoom: 4, minZoom: 4, maxZoom: 14, zoomDelta: 0.5, zoomControl: false});
+var map = L.map('map', {center: [38, -88], zoom: 4, minZoom: 4, maxZoom: 10, zoomDelta: 1, zoomControl: false});
 var states_geojson = "./data/gadm_continental_us_states_simp.geojson";
 var style = {color: "white", fillColor: "white", fillOpacity: 0, opacity: 0.2, weight: 3};
 var stateBordersGeoJSON = new L.GeoJSON.AJAX(states_geojson, {style: style});
@@ -116,7 +114,8 @@ $(function(){
     });
     // update header for pixel-value info-div when spatial aggregator changes
     $("#spatial-dropdown li a").click(function(){
-        $("#onhover-info-header").html("Value at selected pixel")
+        $("#onhover-info-header").html("Value at selected pixel");
+        $("#onhover-info-description").html("Hover Over the map");
     });
     // display modal when download button is clicked
     $("#download-btn").click(function(){

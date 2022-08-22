@@ -1,3 +1,4 @@
 app.py
 templates
 templates/*
+static/cors_config.json

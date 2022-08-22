@@ -13,7 +13,8 @@
     "child_process": "^1.0.2",
     "leaflet-ajax": "^2.1.0",
     "webpack": "^5.63.0",
-    "webpack-cli": "^4.9.1"
+    "webpack-cli": "^4.9.1",
+    "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
     "chart.js": "^3.6.2",

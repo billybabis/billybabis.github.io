@@ -1,11 +1,10 @@
-import { intervalSteps, getPalette, temporal_interval_folder, _remove } from './helper.mjs'
+import {intervalSteps, getPalette, temporal_interval_folder, _remove} from './helper.js';
 import "leaflet-geotiff-2";
 import "leaflet-geotiff-2/dist/leaflet-geotiff-plotty";
 import "leaflet-ajax";
 import * as plotty from "plotty";
-import _ from 'lodash';
+const _ = require('lodash');
 import Chart from 'chart.js/auto';
-
 
 plotty.addColorScale("rff_palette", getPalette(), [0, 0.25, 0.5, 0.75, 1]);
 const COUNTY_GEOJSON_FNAME ="./data/tl_2020_us_county_simplified.geojson";
@@ -31,7 +30,6 @@ function GDC_StatName(cvar, metricInfo){
 }
 
 function format_daterange(temporalFldr, daterange){
-    console.log(temporalFldr);
     if ((temporalFldr == "agg_year") || (temporalFldr == "agg_5year")) {
         return daterange.substring(0,4);
     } else {
@@ -57,10 +55,7 @@ class RendererCounty {
             contentType: "application/json",
             success:function(response){
                 function styleFn(countyFeat){
-                    var borderWeight = 1;
-                    if (map.getZoom() > 5) {
-                        borderWeight = 3;
-                    }
+                    var borderWeight = 1.8;
                     var style = {fillOpacity: 0.7, opacity: 0.1, weight: borderWeight, color:"black"};
                     var valPerCounty = response.observationsByVariable[0].observationsByEntity;
                     for (const countyVal of valPerCounty) {
@@ -82,7 +77,8 @@ class RendererCounty {
                 }
                 function eachFn(countyFeat, layer) {
                     layer.on("mouseover", function(e){
-                        updateInfoBox(e);
+                        var countyVal = e.target.feature.properties.VALUE;
+                        updateInfoBox(e, countyVal);
                     });
                     layer.on("click", function(e){
                         var obsPeriod = temporalFldr_to_gdcLabel(temporalFldr);
@@ -93,10 +89,8 @@ class RendererCounty {
                         var borderWeight = 2.5;
                         if (zlvl <= 5) {
                             borderWeight = 1.5;
-                        } else if (zlvl >= 8 && zlvl <= 10) {
+                        } else if (zlvl >= 8) {
                             borderWeight = 3.5;
-                        } else if (zlvl > 10){
-                            borderWeight = 4.5;
                         }
                         layer.setStyle({weight: borderWeight});
                     });
@@ -115,19 +109,31 @@ class RendererCounty {
  */
 // Fetch geotiff for specified 4km image
 class Renderer4km {
-    constructor(cvar, metricInfo, temporalFldr, daterange) {
-        this.cvar = cvar;
-        this.metricInfo = metricInfo;
-        this.temporalFldr = temporalFldr;
-        this.daterange = daterange;
-    };
-    fetchLayers() {
-        var renderer = L.LeafletGeotiff.plotty({displayMax: this.metricInfo.displayMax, applyDisplayRange: false, colorScale: "rff_palette"});
-        var layer_options = {renderer: renderer, useWorker: false};
-        var fname = "./datacommons/data/scripts/rff/raw_data/prism/daily/4km/"+this.temporalFldr+"/"+this.cvar+"/stats/"+this.daterange+".tif";
-        var layer = L.leafletGeotiff(fname, layer_options);
-        layer.options.rBand = this.metricInfo.bandNum;
-        return [layer];
+    fetchLayers(map, cvar, metricInfo, temporalFldr, daterange) {
+        // Layer 1: raster
+        var gcs_url = "https://storage.googleapis.com/weave_datasets/2017to2021.tif"
+        var renderer = L.LeafletGeotiff.plotty({displayMax: metricInfo.displayMax, applyDisplayRange: false, colorScale: "rff_palette"});
+        var layer_options = {renderer: renderer};
+        var layer = L.leafletGeotiff(gcs_url, layer_options);
+        layer.options.rBand = metricInfo.bandNum;
+        layer.addTo(map);
+        // Layer 2: county borders
+        function eachFn(countyFeat, countyLayer) {
+            countyLayer.on("mouseover", function(e){
+                var pixelVal = layer.getValueAtLatLng(e.latlng.lat, e.latlng.lng)
+                updateInfoBox(e, pixelVal);
+            });
+            countyLayer.on("click", function(e){
+                var obsPeriod = temporalFldr_to_gdcLabel(temporalFldr);
+                var gdc_varname = GDC_StatName(cvar, metricInfo);
+                initTimeseries(e, gdc_varname, obsPeriod);
+            });
+        }
+        var countyStyle = {fillOpacity: 0, opacity: 0.1, weight: 2, color:"white"};
+        var countiesGeoJSON = new L.GeoJSON.AJAX(COUNTY_GEOJSON_FNAME, 
+            {style: countyStyle, onEachFeature: eachFn});
+        countiesGeoJSON.addTo(map);
+        layers = [layer, countiesGeoJSON];
     };
 };
 
@@ -136,6 +142,7 @@ const Renderers = { "4km": Renderer4km, "county": RendererCounty };
 export function fetchLayers(map, cvar, metricInfo, spatialScale, temporalScale, daterange){
     if (layers) {
         layers.forEach(function (layer, i) {_remove(layer);});
+        $('#chart-loading-spinner').show();
     }
     var temporalFldr = temporal_interval_folder(temporalScale);
     var layerRenderer = new Renderers[spatialScale]();
@@ -276,10 +283,9 @@ $("#view-timeseries-btn").click(function(){
 /**
  * DISPLAY PIXEL-VALUE onHOVER
  */
-function updateInfoBox(e){
+function updateInfoBox(e, pixelVal){
     var countyState = getCountyState(e);
     $("#onhover-info-header").html(countyState[0]  + ', ' + countyState[1]);
-    var pixelVal = e.target.feature.properties.VALUE;
     if (pixelVal) {
         $("#onhover-info-description").html(parseFloat(pixelVal).toFixed(4));
     } else {
