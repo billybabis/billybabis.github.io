@@ -7,7 +7,7 @@ import "leaflet-sidebar-v2";
 /**
  * VISUALIZE MAP
  */
-var map = L.map('map', {center: [38, -88], zoom: 4, minZoom: 4, maxZoom: 10, zoomDelta: 1, zoomControl: false});
+var map = L.map('map', {center: [38, -88], zoom: 4, minZoom: 4, maxZoom: 8, zoomDelta: 1, zoomControl: false});
 var states_geojson = "./data/gadm_continental_us_states_simp.geojson";
 var style = {color: "white", fillColor: "white", fillOpacity: 0, opacity: 0.2, weight: 3};
 var stateBordersGeoJSON = new L.GeoJSON.AJAX(states_geojson, {style: style});
@@ -33,7 +33,7 @@ function addLegend(metricInfo) {
         for (var i = grades.length-1; i >= 0; i--) {
             div.innerHTML +=
                 '<i style="background:' + palette[i] + '"></i> ' +
-                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+ <br>' );
+                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '<br>' );
         }
         return div;
     };

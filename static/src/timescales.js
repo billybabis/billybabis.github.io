@@ -21,5 +21,9 @@ var date_intervals_labels = {
     "5year": fiveyear_strs
 }
 export function getDateIntervals(timescale) {
+    var convertLabel = {"agg_year": "yearly", "agg_5year": "5year", "agg_month": "monthly"}
+    if (timescale in convertLabel) {
+        timescale = convertLabel[timescale];
+    }
     return date_intervals_labels[timescale]
 }

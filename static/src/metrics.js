@@ -15,34 +15,85 @@ export function metricsInfo(cvar, metric, spatialScale, temporalScale) {
         "hpi": {"name": "heavy_precip_index", "bandNum": 3},
         "cdd": {"name": "consecutive_dry_days", "bandNum": 4}
     };
-    var maxVals = {
+    var minVals = {
         "ppt": {
             "4km": {
-                "monthly": {"std-dev": 30, "skewness": 50, "kurtosis": 50, "hpi": 100, "cdd": 200}, 
-                "yearly": {"std-dev": 30, "skewness": 10, "kurtosis": 100, "hpi": 100, "cdd": 200}, 
-                "5year": {"std-dev": 30, "skewness": 10, "kurtosis": 100, "hpi": 100, "cdd": 200}
+                "monthly": {"std-dev": 0, "skewness": -1, "kurtosis": -3, "hpi": 0, "cdd": 0}, 
+                "yearly": {"std-dev": 0, "skewness": 0, "kurtosis": -3, "hpi": 0, "cdd": 0}, 
+                "5year": {"std-dev": 0, "skewness": 0, "kurtosis": -3, "hpi": 6.65, "cdd": 0}
             },
-            "county": {
-                "monthly": {"std-dev": 20, "skewness": 10, "kurtosis": 50, "hpi": 100, "cdd": 200},
-                "yearly":  {"std-dev": 20, "skewness": 10, "kurtosis": 50, "hpi": 100, "cdd": 200},
-                "5year": {"std-dev": 20, "skewness": 10, "kurtosis": 50, "hpi": 100, "cdd": 200}
+            "county":  {
+                "monthly": {"std-dev": 0, "skewness": -1, "kurtosis": -3, "hpi": 0, "cdd": 0}, 
+                "yearly": {"std-dev": 0, "skewness": 0, "kurtosis": -3, "hpi": 0, "cdd": 0}, 
+                "5year": {"std-dev": 0, "skewness": 0, "kurtosis": -3, "hpi": 6.65, "cdd": 0}
             }
         },
         "tmin": {
             "4km": {
-                "monthly": {"std-dev": 10, "skewness": 5, "kurtosis": 5}, 
-                "yearly": {"std-dev": 10, "skewness": 5, "kurtosis": 5}, 
-                "5year": {"std-dev": 10, "skewness": 5, "kurtosis": 5}
+                "monthly": {"std-dev": 0, "skewness": -4.5, "kurtosis": -3}, 
+                "yearly": {"std-dev": 0, "skewness": -2, "kurtosis": -3}, 
+                "5year": {"std-dev": 0, "skewness": -1.4, "kurtosis": -3}
             },
             "county": {
-                "monthly": {"std-dev": 10, "skewness": 5, "kurtosis": 5},
-                "yearly":  {"std-dev": 10, "skewness": 5, "kurtosis": 5},
-                "5year": {"std-dev": 10, "skewness": 10, "kurtosis": 5}
+                "monthly": {"std-dev": 0, "skewness": -4.5, "kurtosis": -3}, 
+                "yearly": {"std-dev": 0, "skewness": -2, "kurtosis": -3}, 
+                "5year": {"std-dev": 0, "skewness": -1.4, "kurtosis": -3}
+            }
+        },
+        "tmax": {
+            "4km": {
+                "monthly": {"std-dev": 0, "skewness": -4.5, "kurtosis": -3}, 
+                "yearly": {"std-dev": 0, "skewness": -2, "kurtosis": -3}, 
+                "5year": {"std-dev": 0, "skewness": -1.4, "kurtosis": -3}
+            },
+            "county": {
+                "monthly": {"std-dev": 0, "skewness": -4.5, "kurtosis": -3}, 
+                "yearly": {"std-dev": 0, "skewness": -2, "kurtosis": -3}, 
+                "5year": {"std-dev": 0, "skewness": -1.4, "kurtosis": -3}
             }
         }
     };
+    var maxVals = {
+        "ppt": {
+            "4km": {
+                "monthly": {"std-dev": 130, "skewness": 5, "kurtosis": 25, "hpi": 100, "cdd": 30}, 
+                "yearly": {"std-dev": 48, "skewness": 19, "kurtosis": 360, "hpi": 100, "cdd": 365}, 
+                "5year": {"std-dev": 38, "skewness": 30, "kurtosis": 1000, "hpi": 100, "cdd": 380}
+            },
+            "county": {
+                "monthly": {"std-dev": 130, "skewness": 5, "kurtosis": 25, "hpi": 100, "cdd": 30}, 
+                "yearly": {"std-dev": 48, "skewness": 19, "kurtosis": 360, "hpi": 100, "cdd": 365}, 
+                "5year": {"std-dev": 38, "skewness": 30, "kurtosis": 1000, "hpi": 100, "cdd": 380}
+            }
+        },
+        "tmin": {
+            "4km": {
+                "monthly": {"std-dev": 15, "skewness": 4, "kurtosis": 20}, 
+                "yearly": {"std-dev": 16, "skewness": 1.5, "kurtosis": 5}, 
+                "5year": {"std-dev": 14, "skewness": 1, "kurtosis": 3}
+            },
+            "county": {
+                "monthly": {"std-dev": 15, "skewness": 4, "kurtosis": 20}, 
+                "yearly": {"std-dev": 16, "skewness": 1.5, "kurtosis": 5}, 
+                "5year": {"std-dev": 14, "skewness": 1, "kurtosis": 3}
+            }
+        },
+        "tmax": {
+            "4km": {
+                "monthly": {"std-dev": 14, "skewness": 4, "kurtosis": 23}, 
+                "yearly": {"std-dev": 17, "skewness": 2, "kurtosis": 10}, 
+                "5year": {"std-dev": 15, "skewness": 1.4, "kurtosis": 6}
+            },
+            "county":{
+                "monthly": {"std-dev": 14, "skewness": 4, "kurtosis": 23}, 
+                "yearly": {"std-dev": 17, "skewness": 2, "kurtosis": 10}, 
+                "5year": {"std-dev": 15, "skewness": 1.4, "kurtosis": 6}
+            }
+        }
+    };
+    var minVal = minVals[cvar][spatialScale][temporalScale][metric];
     var maxVal = maxVals[cvar][spatialScale][temporalScale][metric];
-    var steps = intervalSteps(0, maxVal, 5);
+    var steps = intervalSteps(minVal, maxVal, 5);
     var metricInfo = metricInfos[metric];
     metricInfo["displayMax"] = maxVal;
     metricInfo["steps"] = steps;

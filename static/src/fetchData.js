@@ -1,4 +1,5 @@
 import {intervalSteps, getPalette, temporal_interval_folder, _remove} from './helper.js';
+import { getDateIntervals } from './timescales.js';
 import "leaflet-geotiff-2";
 import "leaflet-geotiff-2/dist/leaflet-geotiff-plotty";
 import "leaflet-ajax";
@@ -78,7 +79,8 @@ class RendererCounty {
                 function eachFn(countyFeat, layer) {
                     layer.on("mouseover", function(e){
                         var countyVal = e.target.feature.properties.VALUE;
-                        updateInfoBox(e, countyVal);
+                        var countyValFmtd = parseFloat(countyVal).toFixed(4)
+                        updateInfoBox(e, countyValFmtd);
                     });
                     layer.on("click", function(e){
                         var obsPeriod = temporalFldr_to_gdcLabel(temporalFldr);
@@ -108,20 +110,38 @@ class RendererCounty {
  * VISUALIZE 4km DATA
  */
 // Fetch geotiff for specified 4km image
+function getDateIndex(tmp_fldr, d_range) {
+    var dateRangesJSON = getDateIntervals(tmp_fldr)
+    var dateRanges = [];
+    for (var i=0;i<dateRangesJSON.length;i++){
+        dateRanges.push(dateRangesJSON[i].val)
+    }
+    dateRanges.sort();
+    for (var i=0; i<=dateRanges.length; i++) {
+        if (d_range == dateRanges[i]) {
+            return i+1;
+        }
+    }
+}
+
 class Renderer4km {
     fetchLayers(map, cvar, metricInfo, temporalFldr, daterange) {
         // Layer 1: raster
-        var gcs_url = "https://storage.googleapis.com/weave_datasets/2017to2021.tif"
-        var renderer = L.LeafletGeotiff.plotty({displayMax: metricInfo.displayMax, applyDisplayRange: false, colorScale: "rff_palette"});
-        var layer_options = {renderer: renderer};
-        var layer = L.leafletGeotiff(gcs_url, layer_options);
-        layer.options.rBand = metricInfo.bandNum;
+        var southWest = L.latLng(24, -125),
+        northEast = L.latLng(50, -66),
+        bounds = L.latLngBounds(southWest, northEast);
+        var gcsBaseUrl = "https://storage.googleapis.com/weave_datasets/tiles/"
+        var dateIndex = getDateIndex(temporalFldr, daterange)
+        var stat = metricInfo.name.replace("-", "_");
+        var gcsUrl = gcsBaseUrl + "tiles_"+temporalFldr+"_"+cvar+"_"+stat+"_"+dateIndex
+        gcsUrl = gcsUrl + "/{z}/{x}/{y}.png"
+        var layerOptions = {minZoom:4, maxZoom: 8, reuseTiles:true, bounds: bounds, attribution:"", tms:true}
+        var layer = L.tileLayer(gcsUrl, layerOptions);
         layer.addTo(map);
         // Layer 2: county borders
         function eachFn(countyFeat, countyLayer) {
             countyLayer.on("mouseover", function(e){
-                var pixelVal = layer.getValueAtLatLng(e.latlng.lat, e.latlng.lng)
-                updateInfoBox(e, pixelVal);
+                updateInfoBox(e, "Click on county to view timeseries");
             });
             countyLayer.on("click", function(e){
                 var obsPeriod = temporalFldr_to_gdcLabel(temporalFldr);
@@ -287,11 +307,11 @@ function updateInfoBox(e, pixelVal){
     var countyState = getCountyState(e);
     $("#onhover-info-header").html(countyState[0]  + ', ' + countyState[1]);
     if (pixelVal) {
-        $("#onhover-info-description").html(parseFloat(pixelVal).toFixed(4));
+        $("#onhover-info-description").html(pixelVal);
     } else {
         var spatialScale = $("button#spatial").text();
         $("#onhover-info-header").html("Value at "+spatialScale+" scale");
-        $("#onhover-info-description").html("Hover over the map");
+        $("#onhover-info-description").html("Click on a county to view timeseries");
     }
 }
 function getCountyState(e) {
