@@ -1,5 +1,6 @@
 import {intervalSteps, getPalette, temporal_interval_folder, _remove} from './helper.js';
 import { getDateIntervals } from './timescales.js';
+import { metricsInfo } from './metrics.js';
 import "leaflet-geotiff-2";
 import "leaflet-geotiff-2/dist/leaflet-geotiff-plotty";
 import "leaflet-ajax";
@@ -38,6 +39,23 @@ function format_daterange(temporalFldr, daterange){
     }
 }
 
+export function getDataUrl(spatialScale, cvar, metricInfo, temporalFldr, daterange) {
+    if (spatialScale == "4km") {
+        var gcsBaseUrl = "https://storage.googleapis.com/weave_datasets/tiles/"
+        var dateIndex = getDateIndex(temporalFldr, daterange)
+        var stat = metricInfo.name.replace("-", "_");  // for std-dev to std_dev
+        var gcsUrl = gcsBaseUrl + "tiles_"+temporalFldr+"_"+cvar+"_"+stat+"_"+dateIndex
+        return gcsUrl;
+    } else {
+        // county data in google data commons
+        var dcUrl = "https://api.datacommons.org/v1/bulk/observations/point/linked?entity_type=County&linked_entity=country/USA&linked_property=containedInPlace"
+        var gdc_varname = GDC_StatName(cvar, metricInfo);
+        var daterange_fmtd = format_daterange(temporalFldr, daterange);
+        dcUrl = dcUrl + "&variables="+gdc_varname+"&date="+daterange_fmtd;
+        return dcUrl;
+    }
+}
+
 /**
  * VISUALIZE COUNTY-LEVEL DATA
  */
@@ -46,8 +64,7 @@ class RendererCounty {
     fetchLayers(map, cvar, metricInfo, temporalFldr, daterange) {
         var gdc_varname = GDC_StatName(cvar, metricInfo);
         var daterange_fmtd = format_daterange(temporalFldr, daterange);
-        var dcUrl = "https://api.datacommons.org/v1/bulk/observations/point/linked?entity_type=County&linked_entity=country/USA&linked_property=containedInPlace"
-        dcUrl = dcUrl + "&variables="+gdc_varname+"&date="+daterange_fmtd;
+        var dcUrl = getDataUrl("county", cvar, metricInfo, temporalFldr, daterange)
         var palette = getPalette(true)
         $.ajax({
             url:(dcUrl),
@@ -130,10 +147,7 @@ class Renderer4km {
         var southWest = L.latLng(24, -125),
         northEast = L.latLng(50, -66),
         bounds = L.latLngBounds(southWest, northEast);
-        var gcsBaseUrl = "https://storage.googleapis.com/weave_datasets/tiles/"
-        var dateIndex = getDateIndex(temporalFldr, daterange)
-        var stat = metricInfo.name.replace("-", "_");
-        var gcsUrl = gcsBaseUrl + "tiles_"+temporalFldr+"_"+cvar+"_"+stat+"_"+dateIndex
+        var gcsUrl = getDataUrl("4km", cvar, metricInfo, temporalFldr, daterange);
         gcsUrl = gcsUrl + "/{z}/{x}/{y}.png"
         var layerOptions = {minZoom:4, maxZoom: 8, reuseTiles:true, bounds: bounds, attribution:"", tms:true}
         var layer = L.tileLayer(gcsUrl, layerOptions);
@@ -176,7 +190,8 @@ export function fetchLayers(map, cvar, metricInfo, spatialScale, temporalScale, 
  * DISPLAY TIME SERIES onCLICK
  */
  var currChart, county_geoid; 
- function displayTimeseries(geoid, cvarLabel, metricLabel, gdc_varname, obsPeriod){
+ function displayTimeseries(geoid, cvarLabel, metricLabel, gdc_varname, obsPeriod, gcm){
+    // include gcm in model when it's integrated into GDC
      var gdc_url = "https://api.datacommons.org/stat/series?place=geoId%2F"+geoid+
         "&stat_var="+gdc_varname+"&observation_period="+obsPeriod;
      var historicalYears = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021];
@@ -284,7 +299,8 @@ export function fetchLayers(map, cvar, metricInfo, spatialScale, temporalScale, 
          county_geoid = e.target.feature.properties["GEOID"];
          var cvar = $("button#climate-var").text().trim();
          var metric = $("button#metric").text().trim();
-         displayTimeseries(county_geoid, cvar, metric, gdc_varname, obsPeriod);
+         var gcm = $("button#select-gcm").val();
+         displayTimeseries(county_geoid, cvar, metric, gdc_varname, obsPeriod, gcm);
      }
  }
  function initTimeseries(e, gdc_varname, obsPeriod) {
@@ -297,7 +313,14 @@ $("#view-timeseries-btn").click(function(){
     clearChart();
     var cvar = $("button#climate-var").text().trim();
     var metric = $("button#metric").text().trim();
-    displayTimeseries(county_geoid, cvar, metric);
+    var spatialScale = $("button#spatial").val();
+    var temporalScale = $("button#temporal").val();
+    var metricInfo = metricsInfo(cvar, metric, spatialScale, temporalScale);
+    var gdc_varname = GDC_StatName(cvar, metricInfo);
+    var temporalFldr = temporal_interval_folder(temporalScale);
+    var obsPeriod = temporalFldr_to_gdcLabel(temporalFldr);
+    var gcm = $("button#select-gcm").val();
+    displayTimeseries(county_geoid, cvar, metric, gdc_varname, obsPeriod, gcm);
 });
 
 /**

@@ -1,4 +1,4 @@
-import { fetchLayers }  from './fetchData.js';
+import { fetchLayers, getDataUrl }  from './fetchData.js';
 import { _remove, getPalette, temporal_interval_folder} from './helper.js';
 import { metricsInfo, getMetrics, gcm_cvar } from './metrics.js';
 import { getDateIntervals } from './timescales.js';
@@ -120,30 +120,20 @@ $(function(){
     // display modal when download button is clicked
     $("#download-btn").click(function(){
         var cvar = $("button#climate-var").val();
+        var metric = $("button#metric").val();
         var spatialScale = $("button#spatial").val();
         var temporalScale = $("button#temporal").val();
         var daterange = $("button#daterange").val();
+        var metricInfo = metricsInfo(cvar, metric, spatialScale, temporalScale);
         var daterangeLabel = $("button#daterange").text().trim();
         // update modal description
-        var desc = "Download " + temporalScale + " data at " +spatialScale+ " scale for the continental US during "+ daterangeLabel + "."
-        desc = desc + " The image includes the following bands in order: Standard Deviation, Skewness, Kurtosis, Heavy Precipitation Index."
+        var desc = "Current download: " + temporalScale + " data at " +spatialScale+ " scale for the continental US during "+ daterangeLabel + "."
         $("#download-modal-description").html(desc);
         // update download button listener
         var temporalFdr = temporal_interval_folder(temporalScale);
-        var fname = "./data/prism/daily/"+spatialScale+"/"+temporalFdr+"/"+cvar+"/stats/"+daterange+".tif";
-        $("a#confirm-download-btn").attr("href", fname);
-    });
-    // from the modal, execute the download when prompted
-    $("#download-fmt-dropdown li a").click(function(){
-        var downloadBtn = $("a#confirm-download-btn");
-        var inputFname = downloadBtn.attr("href");
-        var fileFmt = $("button#download-fmt").val();
-        inputFname = inputFname.substring(0, inputFname.indexOf('.tif')) + fileFmt;
-        downloadBtn.attr("href", inputFname);
-        //update download attr
-        var daterange = $("button#daterange").val();
-        var outputFname = outputFilename("ppt", daterange, fileFmt)
-        downloadBtn.attr("download", outputFname);
+        var dataUrl = getDataUrl(spatialScale, cvar, metricInfo, temporalFdr, daterange);
+        console.log(dataUrl);
+        $("a#confirm-download-btn").attr("href", dataUrl);
     });
     $("#temporal-dropdown li a[value='yearly']").click();
     $("#date-dropdown li a[value='2021']").click();

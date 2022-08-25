@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 
-<!-- TO DO: Download jquery and bootstrap files  -->
 <html>
     <head>
         <title>US Weather Volatility (RFF)</title>
@@ -145,15 +144,9 @@
                       <div class="modal-body">
                         <p id="download-modal-description"></p>
                         <div id="file-fmt-dropdown">
-                          <h5 class="dropdown-hdr">Select File Format</h5>
+                          <h5 class="dropdown-hdr">File Format</h5>
                           <div class="dropdown">
-                            <button class="btn btn-basic dropdown-toggle" type="button" id="download-fmt" data-toggle="dropdown">Select
-                              <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu" id="download-fmt-dropdown" aria-labelledby="download-fmt">
-                              <li role="presentation"><a role="menuitem" tabindex="-1" href="#" value=".tif">GeoTiff (.tif)</a></li>
-                              <li role="presentation"><a role="menuitem" tabindex="-1" href="#" value=".bil">EHdr (.bil)</a></li>
-                            </ul>
+                            <p> The county-level data will be downloaded in JSON format from Google Data Commons where they are publically available. The historical 4km raster data will be downloaded as a zip folder of tiled PNG's.</p>
                           </div>
                         </div>
                       </div>
