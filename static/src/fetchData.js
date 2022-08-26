@@ -52,6 +52,7 @@ export function getDataUrl(spatialScale, cvar, metricInfo, temporalFldr, dateran
         var gdc_varname = GDC_StatName(cvar, metricInfo);
         var daterange_fmtd = format_daterange(temporalFldr, daterange);
         dcUrl = dcUrl + "&variables="+gdc_varname+"&date="+daterange_fmtd;
+        dcUrl = dcUrl + "&key=AIzaSyC2dxce4EiwY5OjumqSNqzURtJOoONYPI8";
         return dcUrl;
     }
 }
