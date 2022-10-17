@@ -26,7 +26,15 @@
                       <i class="fa fa-stack-1x">i</i>
                     </span>
                     <span id="cvar-info" class="info-modal-content hidden">
-                      <p class="parameter-description"> Precipitation (mm), Minimum Temperature (&#8451;), Maximum Temperature (&#8451;) statistics are based on daily PRISM data from 1981 to present.</p>
+                      <p class="parameter-description"> 
+                        All weather variability metrics provided here are generated using source data from PRISM Climate Group, Oregon State University, <a href="https://prism.oregonstate.edu/">https://prism.oregonstate.edu/</a>.
+                      </p> 
+                      <p class="parameter-description"> 
+                        Statistics are based off three climate variables: precipitation (mm), minimum temperature (&#8451;) and maximum temperature (&#8451;) for the years 1981 to present.
+                      </p> 
+                      <p class="parameter-description">
+                        Following to PRISM Climate Group’s Terms of Use, these data may be freely reproduced and distributed for non-commercial purposes only. See <a href="https://prism.oregonstate.edu/terms/">https://prism.oregonstate.edu/terms/</a>.
+                      </p>
                     </span>
                   </span>
                 </h4>
@@ -37,6 +45,7 @@
                     <li role="presentation"><a role="menuitem" tabindex="-1" value="ppt">Precipitation</a></li>
                     <li role="presentation"><a role="menuitem" tabindex="-1" value="tmin">Min. Temperature</a></li>
                     <li role="presentation"><a role="menuitem" tabindex="-1" value="tmax">Max. Temperature</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="heatwave">Heatwave</a></li>
                   </ul>
                 </div>
 
@@ -47,11 +56,16 @@
                       <i class="fa fa-stack-1x">i</i>
                     </span>
                     <span id="metric-info" class="info-modal-content hidden">
-                      <p class="parameter-description"> <strong>Standard Deviation (SD)</strong>: measures the amount of variation in a set of values, or the magnitude of variability. A low SD indicates that values tend to be close to the mean (low variability) while a high SD indicates that values are spread over a wider range (high variability).</p>
-                      <p class="parameter-description"> <strong>Skewness</strong>: measures the asymmetry of a distribution. It can be interpreted as the propensity to experience positive or negative shocks.</p>
-                      <p class="parameter-description"> <strong>Kurtosis</strong>: measures the frequency of extreme deviations. It gives an indication of how likely a variable is to take very high or low value.</p>
-                      <p class="parameter-description"> <strong>Heavy Precipitation Index</strong>: measures the portion of total precipitation that occurred on days with "extreme" precipitation (where the definition of “extreme” is the top 1st percentile). It describes what percentage of precipitation is arriving in short, intense bursts. The key benefit of this indicator is that it closely relates to flooding.</p> 
-                      <p class="parameter-description"> <strong>Consecutive dry days (CDD)</strong>: measures the maximum number of consecutive days with precipitation below a given threshold (e.g. 1mm). It has been shown to be a predictor of agricultural yields and ecosystem health, and is easily interpretable by non-specialists. </p>        
+                      <p class="parameter-description">The research community relies on a range of metrics to describe variability in individual climate variables and summarize exposure to extreme weather events. Some metrics --- such as the standard deviation (SD), skewness, and kurtosis --- measure variance in climate conditions over time using empirical dispersion and shape statistics. Such measures are commonly used to measure volatility in financial markets, and are just beginning to be applied to measure climate variability. Other metrics are indicators for extreme events defined based on deviations from a typical range or threshold exceedances. These indicators allow us to summarize exposure to damaging events such as droughts, floods, and heatwaves. Below are the definitions of the metrics provided in this database.  
+                      </p>
+                      <p class="parameter-description"> <strong>Standard Deviation (SD)</strong>: measures the amount of variation in the weather (the magnitude of variability). A low SD indicates that values of the climate variable tend to be close to the mean (low variability) while a high SD indicates that value of the climate variable are spread over a wider range (high variability).</p>
+                      <p class="parameter-description"> <strong>Skewness</strong>: measures the asymmetry of a distribution. It can be interpreted as the propensity to experience positive or negative weather shocks.</p>
+                      <p class="parameter-description"> <strong>Kurtosis</strong>: measures the frequency of extreme deviations. It gives an indication of how likely the climate variable is to take very high or low value.</p>
+                      <p class="parameter-description"> <strong>Standard Precipitation Index (SPI)</strong>: a probability index that gives a representation of abnormal wetness and dryness. It is defined as the number of standard deviations that observed cumulative precipitation deviates from the climatological average within a given location. </p>
+                      <p class="parameter-description"> <strong>Heavy Precipitation Index</strong>: measures the portion of total precipitation that occurred on days with "extreme" precipitation (where the definition of “extreme” is the top 1st percentile). It describes what percentage of precipitation is arriving in short, intense bursts. The key benefit of this indicator is that it closely relates to flooding. </p> 
+                      <p class="parameter-description"> <strong>Consecutive dry days (CDD)</strong>: measures the maximum number of consecutive days with precipitation below a threshold of 1mm. This indicator closely relates to drought and has been shown to be a predictor of agricultural yields and ecosystem health. </p>        
+                      <p class="parameter-description"> <strong>Heatwaves</strong>: Following the US Environmental Protection Agency, we define a heat wave as a period of two or more consecutive days when the daily minimum temperature in a particular location exceeds the 85th percentile of historical July and August temperatures (1981-2000) for that location. The count metric describes the number of heat waves per year in a given location. The length metric describes the duration of the average heat wave, in days, within a particular location and time period. The intensity metric describes how hot the temperature is during heat waves. It is defined as the difference in temperature (measured in degrees Celsius) between the city-specific threshold for heat waves and the average of the daily minimum temperature during the heat wave. </p>
+                      <p class="parameter-description"> <strong>Intra-annual Range</strong>: The range in monthly precipitation observed over one year in a given location. This range is calculated as the difference between the maximum monthly value and the minimum monthly value.</p>
                     </span>
                   </span>
                 </h4>
@@ -62,8 +76,10 @@
                     <li role="presentation"><a role="menuitem" tabindex="-1" value="std-dev">Standard Deviation</a></li>
                     <li role="presentation"><a role="menuitem" tabindex="-1" value="skewness">Skewness</a></li>
                     <li role="presentation"><a role="menuitem" tabindex="-1" value="kurtosis">Kurtosis</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="spi">Standard Precipitation Index</a></li>
                     <li role="presentation"><a role="menuitem" tabindex="-1" value="hpi">Heavy Precipitation Index</a></li>
                     <li role="presentation"><a role="menuitem" tabindex="-1" value="cdd">Consecutive Dry Days</a></li>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" value="range">Intra-annual Variability</a></li>
                   </ul>
                 </div>
 
@@ -74,7 +90,7 @@
                       <i class="fa fa-stack-1x">i</i>
                     </span>
                     <span id="spatial-info" class="info-modal-content hidden">
-                      <p class="parameter-description">4km is the most granular spatial scale available for PRISM data. This data can be aggregated at the county-level.</p>
+                      <p class="parameter-description">We provide high resolution gridded data as well as data aggregated to the county-level. The gridded data is provided at the native resolution of the PRISM Climate Group source data (4km resolution).</p>
                     </span>
                   </span> 
                 </h4>
@@ -94,7 +110,7 @@
                       <i class="fa fa-stack-1x">i</i>
                     </span>
                     <span id="temporal-info" class="info-modal-content hidden">
-                      <p class="parameter-description">Statistics can be computed over monthly, yearly, or 5-yearly intervals.</p>
+                      <p class="parameter-description">To capture both short-term and longer-term weather variability, we compute statistics over a range of temporal scales: monthly, annual, and 5-year intervals.</p>
                     </span>
                   </span>
                 </h4>
@@ -104,18 +120,18 @@
                   <ul class="dropdown-menu" role="menu" id="temporal-dropdown" aria-labelledby="temporal">
                     <!--li role="presentation"><a role="menuitem" tabindex="-1" value="monthly">Monthly</a></li-->
                     <li role="presentation"><a role="menuitem" tabindex="-1" value="yearly">Yearly</a></li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" value="5year">5-Year</a></li>
+                    <li id="option5y" role="presentation"><a role="menuitem" tabindex="-1" value="5year">5-Year</a></li>
                   </ul>
                 </div>
 
                 <h4 class="dropdown-hdr">Time Period
-                  <span class="info-modal-icon" data-info-modal="metric-info" data-modal-header="Description of Time Periods">
+                  <span class="info-modal-icon" data-info-modal="date-info" data-modal-header="Description of Time Periods">
                     <span class="fa-stack fa-sm">
                       <i class="fa fa-circle-thin fa-stack-2x"></i>
                       <i class="fa fa-stack-1x">i</i>
                     </span>
-                    <span id="metric-info" class="info-modal-content hidden">
-                      <p class="parameter-description">Select a specific monthly, annual, or 5-year time interval to compute the selected statistic.</p>
+                    <span id="date-info" class="info-modal-content hidden">
+                      <p class="parameter-description">Please select the time period you would like to visualize.</p>
                     </span>
                   </span>
                 </h4>

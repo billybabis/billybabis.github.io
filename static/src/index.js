@@ -54,6 +54,15 @@ function displayLayers(cvar, metric, spatialScale, temporalScale, daterange){
 function dropdownListener(element) {
     $(element).parents(".dropdown").find('.btn').html($(element).text().trim() + ' <span class="caret right-caret pull-right"></span>');
     $(element).parents(".dropdown").find('.btn').val($(element).attr('value'));
+    // temporary hack to restrict certain statistics to yearly analysis
+    if ( $(element).parent().parent().attr('id') == "metric-dropdown") {
+        var val = $(element).attr('value');
+        if ( (val == "range") || (val == "spi") ){
+            $("#option5y").addClass("disabled");
+        } else {
+            $("#option5y").removeClass("disabled");
+        }
+    }
 }
 function outputFilename(unit, daterange, fmt) {
     return  unit + "_volatility_" + daterange + fmt;

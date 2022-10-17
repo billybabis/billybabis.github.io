@@ -20,13 +20,17 @@ function temporalFldr_to_gdcLabel(tempFldr) {
 
 function GDC_StatName(cvar, metricInfo){
     var metric = metricInfo.name
-    if (metric == "hpi") {
-        return "HeavyPrecipitationIndex"; 
-    } else if (metric == "cdd") {
-        return "ConsecutiveDryDays";
+    var uniques = {"hpi": "HeavyPrecipitationIndex", "cdd": "ConsecutiveDryDays", 
+        "spi": "StandardizedPrecipitationIndex_Atmosphere"};
+    var prefixes = {"std-dev": "StandardDeviation_", "skewness": "Skewness_", "kurtosis": "Kurtosis_", 
+        "count": "Count_", "length": "NumberOfDays_", "intensity": "Intensity_", "range": "InterannualRange_Monthly_"};
+    var suffixes = {"ppt": "DailyPrecipitation", "tmin": "DailyMinTemperature", 
+        "tmax": "DailyMaxTemperature", "heatwave": "HeatWaveEvent"};
+    if (metric in uniques) {
+        return uniques[metric]; 
+    } else if (metric=="range") {
+        return "InterannualRange_Monthly_" + suffixes[cvar].replace("Daily", "");
     } else {
-        var prefixes = {"std-dev": "StandardDeviation_", "skewness": "Skewness_", "kurtosis": "Kurtosis_"}
-        var suffixes = {"ppt": "DailyPrecipitation", "tmin": "DailyMinTemperature", "tmax": "DailyMaxTemperature"}
         return prefixes[metric] + suffixes[cvar]
     }
 }
@@ -44,12 +48,17 @@ export function getDataUrl(spatialScale, cvar, metricInfo, temporalFldr, dateran
         var gcsBaseUrl = "https://storage.googleapis.com/weave_datasets/tiles/"
         var dateIndex = getDateIndex(temporalFldr, daterange)
         var stat = metricInfo.name.replace("-", "_");  // for std-dev to std_dev
-        var gcsUrl = gcsBaseUrl + "tiles_"+temporalFldr+"_"+cvar+"_"+stat+"_"+dateIndex
+        if( (cvar == "heatwave") && (stat=="count") && (temporalFldr=="agg_year") ) {
+            stat = "hw_count";   // ideosyncratic naming convention in google cloud
+        }
+        var gcsUrl = gcsBaseUrl + "tiles_"+temporalFldr+"_"+cvar+"_"+stat+"_"+dateIndex;
+        console.log(gcsUrl);
         return gcsUrl;
     } else {
         // county data in google data commons
         var dcUrl = "https://api.datacommons.org/v1/bulk/observations/point/linked?entity_type=County&linked_entity=country/USA&linked_property=containedInPlace"
         var gdc_varname = GDC_StatName(cvar, metricInfo);
+        console.log(gdc_varname);
         var daterange_fmtd = format_daterange(temporalFldr, daterange);
         dcUrl = dcUrl + "&variables="+gdc_varname+"&date="+daterange_fmtd;
         dcUrl = dcUrl + "&key=AIzaSyBcoGjRUxBYNMzSGt96BjCqG7QfC4ACPds";
@@ -64,7 +73,6 @@ export function getDataUrl(spatialScale, cvar, metricInfo, temporalFldr, dateran
 class RendererCounty {
     fetchLayers(map, cvar, metricInfo, temporalFldr, daterange) {
         var gdc_varname = GDC_StatName(cvar, metricInfo);
-        var daterange_fmtd = format_daterange(temporalFldr, daterange);
         var dcUrl = getDataUrl("county", cvar, metricInfo, temporalFldr, daterange)
         var palette = getPalette(true)
         $.ajax({
